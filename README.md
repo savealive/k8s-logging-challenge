@@ -334,3 +334,191 @@ THIS APPLICATION CAPTURES ALL CONSOLE OUTPUT AND FORWARDS IT TO elasticsearch . 
 including things like IP addresses, container images, and object names will NOT be anonymized.
 ```
 Now we can check out logs in Kibana.
+
+## Teardown
+### Delete helm releases
+```bash
+$ helm delete --purge elk-stack fluentd kibana
+```
+Delete PVCs
+```bash
+$ kubectl -n elk-stack delete pvc -l release=elk-stack
+persistentvolumeclaim "data-elk-stack-elasticsearch-data-0" deleted
+persistentvolumeclaim "data-elk-stack-elasticsearch-master-0" deleted
+persistentvolumeclaim "data-elk-stack-elasticsearch-master-1" deleted
+persistentvolumeclaim "data-elk-stack-elasticsearch-master-2" deleted
+```
+### Destroy terraform infra
+```bash
+$ terraform destroy
+provider.aws.region
+  The region where AWS operations will take place. Examples
+  are us-east-1, us-west-2, etc.
+
+  Default: us-east-1
+  Enter a value: eu-central-1
+
+aws_vpc.kube: Refreshing state... (ID: vpc-02b86b0b23203fb07)
+aws_iam_role.kube-cluster: Refreshing state... (ID: terraform-eks-kube-cluster)
+aws_key_pair.ec2_key: Refreshing state... (ID: ec2_user)
+aws_iam_role.kube-node: Refreshing state... (ID: terraform-eks-kube-node)
+data.aws_availability_zones.available: Refreshing state...
+data.aws_region.current: Refreshing state...
+aws_iam_instance_profile.kube-node: Refreshing state... (ID: terraform-eks-kube)
+aws_iam_role_policy_attachment.kube-node-AmazonEC2ContainerRegistryReadOnly: Refreshing state... (ID: terraform-eks-kube-node-20190322085911090900000004)
+aws_iam_role_policy_attachment.kube-node-AmazonEKSWorkerNodePolicy: Refreshing state... (ID: terraform-eks-kube-node-20190322085911091100000005)
+aws_iam_role_policy_attachment.kube-node-AmazonEKS_CNI_Policy: Refreshing state... (ID: terraform-eks-kube-node-20190322085911090500000003)
+aws_iam_role_policy_attachment.kube-cluster-AmazonEKSServicePolicy: Refreshing state... (ID: terraform-eks-kube-cluster-20190322085910559700000001)
+aws_iam_role_policy_attachment.kube-cluster-AmazonEKSClusterPolicy: Refreshing state... (ID: terraform-eks-kube-cluster-20190322085910565500000002)
+aws_security_group.kube-node: Refreshing state... (ID: sg-0272c61b327772dc2)
+aws_security_group.kube-cluster: Refreshing state... (ID: sg-00135674e0c8d54cb)
+aws_subnet.kube[1]: Refreshing state... (ID: subnet-0e70df36c56fad0fe)
+aws_subnet.kube[0]: Refreshing state... (ID: subnet-0fccf012357081813)
+aws_internet_gateway.kube: Refreshing state... (ID: igw-0064d41c2c7fd7322)
+aws_route_table.kube: Refreshing state... (ID: rtb-0af23a161e121d60c)
+aws_security_group_rule.kube-cluster-ingress-workstation-https: Refreshing state... (ID: sgrule-3773507138)
+aws_eks_cluster.kube: Refreshing state... (ID: eks-cluster)
+aws_security_group_rule.kube-node-ingress-cluster: Refreshing state... (ID: sgrule-1788509864)
+aws_security_group_rule.kube-cluster-ingress-node-https: Refreshing state... (ID: sgrule-47659187)
+aws_security_group_rule.kube-node-ingress-self: Refreshing state... (ID: sgrule-2662608826)
+aws_route_table_association.kube[0]: Refreshing state... (ID: rtbassoc-0e3fe129583fbc42e)
+aws_route_table_association.kube[1]: Refreshing state... (ID: rtbassoc-067ee741b430a4ba4)
+data.aws_ami.eks-worker: Refreshing state...
+aws_launch_configuration.kube: Refreshing state... (ID: terraform-eks-kube20190322125255979000000001)
+aws_autoscaling_group.kube: Refreshing state... (ID: terraform-eks-kube)
+
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  - aws_autoscaling_group.kube
+
+  - aws_eks_cluster.kube
+
+  - aws_iam_instance_profile.kube-node
+
+  - aws_iam_role.kube-cluster
+
+  - aws_iam_role.kube-node
+
+  - aws_iam_role_policy_attachment.kube-cluster-AmazonEKSClusterPolicy
+
+  - aws_iam_role_policy_attachment.kube-cluster-AmazonEKSServicePolicy
+
+  - aws_iam_role_policy_attachment.kube-node-AmazonEC2ContainerRegistryReadOnly
+
+  - aws_iam_role_policy_attachment.kube-node-AmazonEKSWorkerNodePolicy
+
+  - aws_iam_role_policy_attachment.kube-node-AmazonEKS_CNI_Policy
+
+  - aws_internet_gateway.kube
+
+  - aws_key_pair.ec2_key
+
+  - aws_launch_configuration.kube
+
+  - aws_route_table.kube
+
+  - aws_route_table_association.kube[0]
+
+  - aws_route_table_association.kube[1]
+
+  - aws_security_group.kube-cluster
+
+  - aws_security_group.kube-node
+
+  - aws_security_group_rule.kube-cluster-ingress-node-https
+
+  - aws_security_group_rule.kube-cluster-ingress-workstation-https
+
+  - aws_security_group_rule.kube-node-ingress-cluster
+
+  - aws_security_group_rule.kube-node-ingress-self
+
+  - aws_subnet.kube[0]
+
+  - aws_subnet.kube[1]
+
+  - aws_vpc.kube
+
+
+Plan: 0 to add, 0 to change, 25 to destroy.
+
+Do you really want to destroy all resources?
+  Terraform will destroy all your managed infrastructure, as shown above.
+  There is no undo. Only 'yes' will be accepted to confirm.
+
+  Enter a value: yes
+ 
+aws_security_group_rule.kube-cluster-ingress-workstation-https: Destroying... (ID: sgrule-3773507138)
+aws_route_table_association.kube[0]: Destroying... (ID: rtbassoc-0e3fe129583fbc42e)
+aws_security_group_rule.kube-node-ingress-cluster: Destroying... (ID: sgrule-1788509864)
+aws_iam_role_policy_attachment.kube-node-AmazonEKSWorkerNodePolicy: Destroying... (ID: terraform-eks-kube-node-20190322085911091100000005)
+aws_security_group_rule.kube-node-ingress-self: Destroying... (ID: sgrule-2662608826)
+aws_autoscaling_group.kube: Destroying... (ID: terraform-eks-kube)
+aws_security_group_rule.kube-cluster-ingress-node-https: Destroying... (ID: sgrule-47659187)
+aws_route_table_association.kube[1]: Destroying... (ID: rtbassoc-067ee741b430a4ba4)
+aws_iam_role_policy_attachment.kube-node-AmazonEKS_CNI_Policy: Destroying... (ID: terraform-eks-kube-node-20190322085911090500000003)
+aws_iam_role_policy_attachment.kube-node-AmazonEC2ContainerRegistryReadOnly: Destroying... (ID: terraform-eks-kube-node-20190322085911090900000004)
+aws_route_table_association.kube[0]: Destruction complete after 0s
+aws_route_table_association.kube[1]: Destruction complete after 0s
+aws_route_table.kube: Destroying... (ID: rtb-0af23a161e121d60c)
+aws_iam_role_policy_attachment.kube-node-AmazonEKSWorkerNodePolicy: Destruction complete after 0s
+aws_security_group_rule.kube-node-ingress-self: Destruction complete after 0s
+aws_iam_role_policy_attachment.kube-node-AmazonEC2ContainerRegistryReadOnly: Destruction complete after 0s
+aws_iam_role_policy_attachment.kube-node-AmazonEKS_CNI_Policy: Destruction complete after 0s
+aws_security_group_rule.kube-cluster-ingress-workstation-https: Destruction complete after 0s
+aws_route_table.kube: Destruction complete after 1s
+aws_internet_gateway.kube: Destroying... (ID: igw-0064d41c2c7fd7322)
+aws_security_group_rule.kube-node-ingress-cluster: Destruction complete after 1s
+aws_security_group_rule.kube-cluster-ingress-node-https: Destruction complete after 1s
+aws_autoscaling_group.kube: Still destroying... (ID: terraform-eks-kube, 10s elapsed)
+aws_internet_gateway.kube: Still destroying... (ID: igw-0064d41c2c7fd7322, 10s elapsed)
+aws_autoscaling_group.kube: Still destroying... (ID: terraform-eks-kube, 20s elapsed)
+aws_internet_gateway.kube: Still destroying... (ID: igw-0064d41c2c7fd7322, 20s elapsed)
+aws_autoscaling_group.kube: Still destroying... (ID: terraform-eks-kube, 30s elapsed)
+aws_internet_gateway.kube: Still destroying... (ID: igw-0064d41c2c7fd7322, 30s elapsed)
+aws_autoscaling_group.kube: Still destroying... (ID: terraform-eks-kube, 40s elapsed)
+aws_internet_gateway.kube: Still destroying... (ID: igw-0064d41c2c7fd7322, 40s elapsed)
+aws_internet_gateway.kube: Destruction complete after 47s
+aws_autoscaling_group.kube: Still destroying... (ID: terraform-eks-kube, 50s elapsed)
+aws_autoscaling_group.kube: Still destroying... (ID: terraform-eks-kube, 1m0s elapsed)
+aws_autoscaling_group.kube: Still destroying... (ID: terraform-eks-kube, 1m10s elapsed)
+aws_autoscaling_group.kube: Still destroying... (ID: terraform-eks-kube, 1m20s elapsed)
+aws_autoscaling_group.kube: Destruction complete after 1m26s
+aws_launch_configuration.kube: Destroying... (ID: terraform-eks-kube20190322125255979000000001)
+aws_launch_configuration.kube: Destruction complete after 0s
+aws_iam_instance_profile.kube-node: Destroying... (ID: terraform-eks-kube)
+aws_key_pair.ec2_key: Destroying... (ID: ec2_user)
+aws_security_group.kube-node: Destroying... (ID: sg-0272c61b327772dc2)
+aws_eks_cluster.kube: Destroying... (ID: eks-cluster)
+aws_key_pair.ec2_key: Destruction complete after 0s
+aws_security_group.kube-node: Destruction complete after 1s
+aws_iam_instance_profile.kube-node: Destruction complete after 1s
+aws_iam_role.kube-node: Destroying... (ID: terraform-eks-kube-node)
+aws_iam_role.kube-node: Destruction complete after 2s
+aws_eks_cluster.kube: Still destroying... (ID: eks-cluster, 10s elapsed)
+aws_eks_cluster.kube: Still destroying... (ID: eks-cluster, 20s elapsed)
+...
+aws_eks_cluster.kube: Still destroying... (ID: eks-cluster, 11m40s elapsed)
+aws_eks_cluster.kube: Still destroying... (ID: eks-cluster, 11m50s elapsed)
+aws_eks_cluster.kube: Destruction complete after 11m52s
+aws_subnet.kube[0]: Destroying... (ID: subnet-0fccf012357081813)
+aws_iam_role_policy_attachment.kube-cluster-AmazonEKSClusterPolicy: Destroying... (ID: terraform-eks-kube-cluster-20190322085910565500000002)
+aws_iam_role_policy_attachment.kube-cluster-AmazonEKSServicePolicy: Destroying... (ID: terraform-eks-kube-cluster-20190322085910559700000001)
+aws_security_group.kube-cluster: Destroying... (ID: sg-00135674e0c8d54cb)
+aws_subnet.kube[1]: Destroying... (ID: subnet-0e70df36c56fad0fe)
+aws_subnet.kube[1]: Destruction complete after 1s
+aws_subnet.kube[0]: Destruction complete after 1s
+aws_security_group.kube-cluster: Destruction complete after 1s
+aws_vpc.kube: Destroying... (ID: vpc-02b86b0b23203fb07)
+aws_vpc.kube: Destruction complete after 0s
+aws_iam_role_policy_attachment.kube-cluster-AmazonEKSServicePolicy: Destruction complete after 2s
+aws_iam_role_policy_attachment.kube-cluster-AmazonEKSClusterPolicy: Destruction complete after 3s
+aws_iam_role.kube-cluster: Destroying... (ID: terraform-eks-kube-cluster)
+aws_iam_role.kube-cluster: Destruction complete after 1s
+
+Destroy complete! Resources: 25 destroyed.
+```
