@@ -457,6 +457,12 @@ configMaps:
       @type kubernetes_metadata
     </filter>
 
+    <filter kubernetes.var.log.containers.**wordpress**.log>
+      @type parser
+      key_name log
+      format apache2
+    </filter>
+
     <match **>
       @id elasticsearch
       @type elasticsearch

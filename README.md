@@ -111,7 +111,7 @@ ip-10-0-1-59.eu-central-1.compute.internal   Ready    <none>   1h    v1.11.5
 ## Setup Helm
 ### Create account and rbac roles
 ```bash
-kubeclt apply -f helm-install/helm-rbac.yaml
+kubectl apply -f helm-install/helm-rbac.yaml
 ```
 ### Init Tiller
 ```bash
@@ -338,6 +338,62 @@ including things like IP addresses, container images, and object names will NOT 
 ```
 Now we can check out logs in Kibana.
 
+## Deploy and collect logs from an application
+By default fluentd doesn't know how to parse pod logs so they appear in Elk as plain text record "log". It's not good because in this case we don't have that flexility which ELK provides if data is structured.
+Consider we have an Apache server POD which writes logs to stdout:
+```bash
+# Deploy simple Wordpress site
+$ helm install --name=website --namespace website --set wordpressUsername=admin,wordpressPassword=password,mariadb.mariadbRootPassword=sdkj3kfdjAd stable/wordpress
+```
+Log field in ELK will look like
+```
+  "_source": {
+    "log": "10.0.0.82 - - [26/Mar/2019:11:15:34 +0000] \"GET /wp-login.php HTTP/1.1\" 200 1309\n",
+    "stream": "stdout",
+```
+If we had to filter events by status 404 we would use full-text search what is obviously isn't preferrable. We need to parse log record and store fields ik ELK record. 
+To do it we have to add following code into output.conf config (charts-values/fluentd-elastic-values.yaml):
+```
+    <filter kubernetes.var.log.containers.**wordpress**.log>
+      @type parser
+      key_name log
+      format apache2
+    </filter>
+```
+It will treat tag "kubernetes.var.log.containers.**wordpress**.log" as apache2 format and parse log into separate fields so we can filter data usng something like this:
+```
+tag:"kubernetes.var.log.containers.website-wordpress*" code:"404"
+```
+JSON event:
+```
+{
+  "_index": "logstash-2019.03.26",
+  "_type": "_doc",
+  "_id": "-xgcumkB34ScEQvfJHvy",
+  "_version": 1,
+  "_score": null,
+  "_source": {
+    "host": "10.0.0.82",
+    "user": null,
+    "method": "GET",
+    "path": "/wp-login.php",
+    "code": 200,
+    "size": 1309,
+    "referer": null,
+    "agent": null,
+    "@timestamp": "2019-03-26T13:06:34.000000000+00:00",
+    "tag": "kubernetes.var.log.containers.website-wordpress-55fff6d666-4lhtc_website_wordpress-e2c2b22fa659cde6f9582d941ccb74b79d0a5f6aceaf57e7c6a722b07d17e6af.log"
+  },
+  "fields": {
+    "@timestamp": [
+      "2019-03-26T13:06:34.000Z"
+    ]
+  },
+  "sort": [
+    1553605594000
+  ]
+}
+```
 ## Teardown
 ### Delete helm releases
 ```bash
