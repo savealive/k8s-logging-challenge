@@ -92,11 +92,14 @@ users:
         - "-i"
         - "eks-cluster"
 ```
-Copy contents of tf output config_map_aws_auth into config_map_aws_auth.yaml and contents of kubeconfig into ~/.kube/config
-
+Save kubeconfig into ~/.kube/config-eks
+```
+$ terraform output kubeconfig > ~/.kube/config-eks
+$ export KUBECONFIG=~/.kube/config-eks
+```
 Once done run 
 ```bash
-$ kubectl apply -f config_map_aws_auth.yaml
+$ terraform output config_map_aws_auth | kubectl apply -f -
 ```
 After this step "kubectl get node" should return at least something. 
 ```bash
