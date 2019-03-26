@@ -24,6 +24,7 @@ resource "aws_subnet" "kube" {
     map(
      "Name", "terraform-eks-kube-node",
      "kubernetes.io/cluster/${var.cluster-name}", "shared",
+     "kubernetes.io/role/elb", "1",
     )
   }"
 }

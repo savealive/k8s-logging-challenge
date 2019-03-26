@@ -394,6 +394,15 @@ JSON event:
   ]
 }
 ```
+## ALB Ingress setup
+It's possible to use ALB ingress controller along with external-dns.
+```
+$ cd alb-ingress
+$ kubectl apply -f kube2iam.yaml
+$ helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+$ helm install --name=alb-ingress incubator/aws-alb-ingress-controller --namespace=kube-system -f alb-ingress.yaml
+$ kubectl apply -f external-dns.yaml
+```
 ## Teardown
 ### Delete helm releases
 ```bash

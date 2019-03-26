@@ -45,7 +45,7 @@ resource "aws_launch_configuration" "kube" {
   image_id                    = "${data.aws_ami.eks-worker.id}"
   instance_type               = "m4.large"
   key_name                    = "${aws_key_pair.ec2_key_k8s.key_name}"
-  name_prefix                 = "terraform-eks-kube"
+  name_prefix                 = "eks-kube-worker"
   security_groups             = ["${aws_security_group.kube-node.id}"]
   user_data_base64            = "${base64encode(local.kube-node-userdata)}"
 
