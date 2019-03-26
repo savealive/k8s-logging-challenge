@@ -397,15 +397,17 @@ JSON event:
 ## Teardown
 ### Delete helm releases
 ```bash
-$ helm delete --purge elk-stack fluentd kibana
+$ helm delete --purge website kibana fluentd elk-stack
 ```
 Delete PVCs
 ```bash
-$ kubectl -n elk-stack delete pvc -l release=elk-stack
+$ kubectl get pvc --all-namespaces -o jsonpath='{range .items[*]}{"kubectl delete pvc -n "}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}' | bash
 persistentvolumeclaim "data-elk-stack-elasticsearch-data-0" deleted
+persistentvolumeclaim "data-elk-stack-elasticsearch-data-1" deleted
 persistentvolumeclaim "data-elk-stack-elasticsearch-master-0" deleted
 persistentvolumeclaim "data-elk-stack-elasticsearch-master-1" deleted
 persistentvolumeclaim "data-elk-stack-elasticsearch-master-2" deleted
+persistentvolumeclaim "data-website-mariadb-0" deleted
 ```
 ### Destroy terraform infra
 ```bash
