@@ -250,7 +250,15 @@ $ curl -s 'localhost:9200/_template/all' | jq .
   }
 }
 ```
-
+## ALB Ingress setup
+It's possible to use ALB ingress controller along with external-dns to dynamically configure Route53 hosted zones accordingly to k8s ingress settings.
+```
+$ cd alb-ingress
+$ kubectl apply -f kube2iam.yaml
+$ helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+$ helm install --name=alb-ingress incubator/aws-alb-ingress-controller --namespace=kube-system -f alb-ingress.yaml
+$ kubectl apply -f external-dns.yaml
+```
 ### Deploy Kibana
 We don't configure external access and auth as it's just a simple example. 
 ```bash
@@ -343,7 +351,7 @@ By default fluentd doesn't know how to parse pod logs so they appear in Elk as p
 Consider we have an Apache server POD which writes logs to stdout:
 ```bash
 # Deploy simple Wordpress site
-$ helm install --name=website --namespace website --set wordpressUsername=admin,wordpressPassword=password,mariadb.mariadbRootPassword=sdkj3kfdjAd stable/wordpress
+$ helm install --name wp stable/wordpress --namespace wp -f charts-values/wordpress-values.yaml
 ```
 Log field in ELK will look like
 ```
@@ -393,15 +401,6 @@ JSON event:
     1553605594000
   ]
 }
-```
-## ALB Ingress setup
-It's possible to use ALB ingress controller along with external-dns.
-```
-$ cd alb-ingress
-$ kubectl apply -f kube2iam.yaml
-$ helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
-$ helm install --name=alb-ingress incubator/aws-alb-ingress-controller --namespace=kube-system -f alb-ingress.yaml
-$ kubectl apply -f external-dns.yaml
 ```
 ## Teardown
 ### Delete helm releases
