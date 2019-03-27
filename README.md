@@ -405,7 +405,11 @@ JSON event:
 ## Teardown
 ### Delete helm releases
 ```bash
-$ helm delete --purge website kibana fluentd elk-stack
+$ helm delete --purge wp kibana fluentd elk-stack
+release "wp" deleted
+release "kibana" deleted
+release "fluentd" deleted
+release "elk-stack" deleted
 ```
 Delete PVCs
 ```bash
