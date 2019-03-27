@@ -28,16 +28,16 @@ files:
     ## Ref: https://www.elastic.co/guide/en/kibana/current/settings.html
     # server.port: 5601
     # logging.verbose: "true"
-    # server.defaultRoute: "/app/kibana"
+    server.defaultRoute: "/app/kibana"
 
 deployment:
   annotations: {}
 
 service:
-  type: ClusterIP
+  type: NodePort
   # clusterIP: None
   # portName: kibana-svc
-  externalPort: 443
+  externalPort: 80
   internalPort: 5601
   # authProxyPort: 5602 To be used with authProxyEnabled and a proxy extraContainer
   ## External IP addresses of service
@@ -63,17 +63,12 @@ service:
   selector: {}
 
 ingress:
-  enabled: false
-  # hosts:
-  # - kibana.localhost.localdomain
-  # - localhost.localdomain/kibana
-  # annotations:
-  #   kubernetes.io/ingress.class: nginx
-  #   kubernetes.io/tls-acme: "true"
-  # tls:
-  # - secretName: chart-example-tls
-  #   hosts:
-  #     - chart-example.local
+  enabled: true
+  hosts:
+  - kibana.savchenko.site/*
+  annotations:
+   kubernetes.io/ingress.class: alb
+   alb.ingress.kubernetes.io/scheme: internet-facing
 
 serviceAccount:
   # Specifies whether a service account should be created
